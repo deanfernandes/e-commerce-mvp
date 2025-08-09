@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
-import { Request, Response } from "express";
-import User from "../models/user";
 import { hashPassword, verifyPassword } from "../services/password-service";
 import { createUser, getUserByEmail } from "../services/database-service";
 import logger from "../services/logger-service";
-import { StringValue } from "ms";
+import type User from "../models/user";
+import type { Request, Response } from "express";
+import type { StringValue } from "ms";
 
 export const register = async (req: Request, res: Response) => {
   try {
