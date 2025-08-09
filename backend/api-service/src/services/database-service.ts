@@ -1,6 +1,7 @@
 import { Client } from "pg";
 import dotenv from "dotenv";
 import User from "../models/user";
+import logger from "./logger-service";
 
 async function createUser(user: User): Promise<User> {
   return (
@@ -38,6 +39,8 @@ const client = new Client({
 });
 (async () => {
   await client.connect();
+
+  logger.info(`connected database`);
 })();
 
 export { createUser, getUsers, getUserById, updateUser, deleteUser };
