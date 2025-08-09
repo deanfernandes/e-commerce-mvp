@@ -1,10 +1,12 @@
 import type { RequestHandler } from "express";
 import type User from "../models/user";
+import { hashPassword } from "../services/password-service";
 
 const users: User[] = [];
 
 export const createUser: RequestHandler = async (req, res) => {
   const user = req.body as User;
+  user.password = await hashPassword(user.password);
   user.id = users.length + 1;
   users.push(user);
   res.status(201).json(user);
