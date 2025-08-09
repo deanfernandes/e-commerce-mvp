@@ -32,6 +32,11 @@ async function deleteUser(id: number): Promise<void> {
   await client.query("DELETE FROM users WHERE id = $1", [id]);
 }
 
+async function getUserByEmail(email: string): Promise<User | undefined> {
+  return (await client.query("SELECT * FROM users WHERE email = $1", [email]))
+    .rows[0];
+}
+
 dotenv.config();
 
 const client = new Client({
@@ -43,4 +48,11 @@ const client = new Client({
   logger.info(`connected database`);
 })();
 
-export { createUser, getUsers, getUserById, updateUser, deleteUser };
+export {
+  createUser,
+  getUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+  getUserByEmail,
+};
