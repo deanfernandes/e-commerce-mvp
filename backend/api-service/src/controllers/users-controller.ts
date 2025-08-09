@@ -1,10 +1,10 @@
-import type { RequestHandler } from "express";
+import type { Request, Response } from "express";
 import type User from "../models/user";
 import { hashPassword } from "../services/password-service";
 import * as databaseService from "../services/database-service";
 import logger from "../services/logger-service";
 
-export const createUser: RequestHandler = async (req, res) => {
+export const createUser = async (req: Request, res: Response) => {
   try {
     const user = req.body as User;
 
@@ -31,7 +31,7 @@ export const createUser: RequestHandler = async (req, res) => {
   }
 };
 
-export const getUsers: RequestHandler = async (_req, res) => {
+export const getUsers = async (req: Request, res: Response) => {
   try {
     const users = await databaseService.getUsers();
     return res.json(users);
@@ -41,7 +41,7 @@ export const getUsers: RequestHandler = async (_req, res) => {
   }
 };
 
-export const getUserById: RequestHandler = async (req, res) => {
+export const getUserById = async (req: Request, res: Response) => {
   try {
     const userId = Number(req.params.id);
 
@@ -58,7 +58,7 @@ export const getUserById: RequestHandler = async (req, res) => {
   }
 };
 
-export const updateUser: RequestHandler = async (req, res) => {
+export const updateUser = async (req: Request, res: Response) => {
   try {
     const userId = Number(req.params.id);
 
@@ -94,7 +94,7 @@ export const updateUser: RequestHandler = async (req, res) => {
   }
 };
 
-export const deleteUser: RequestHandler = async (req, res) => {
+export const deleteUser = async (req: Request, res: Response) => {
   try {
     const userId = Number(req.params.id);
 
