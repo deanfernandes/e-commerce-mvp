@@ -136,7 +136,7 @@ async function createOrder(
 dotenv.config();
 
 const client = new Client({
-  connectionString: process.env.CONNECTION_STRING,
+  connectionString: process.env.DATABASE_URL,
 });
 (async () => {
   await client.connect();
