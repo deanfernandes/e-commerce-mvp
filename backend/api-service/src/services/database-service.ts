@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import User from "../models/user";
 import logger from "./logger-service";
 import type Product from "../models/product";
+import Order from "../models/Order";
+import OrderProduct from "../models/OrderProduct";
 
 async function createUser(user: User): Promise<User> {
   return (
@@ -100,6 +102,37 @@ const seedProducts = async () => {
   }
 };
 
+async function createOrder(
+  userId: number,
+  orderProducts: OrderProduct[]
+): Promise<number> {
+  try {
+    await client.query("BEGIN");
+
+    const id: number = (
+      await client.query(
+        "INSERT INTO orders (user_id) VALUES ($1) RETURNING id",
+        [userId]
+      )
+    ).rows[0].id;
+
+    for (const orderProduct of orderProducts) {
+      await client.query(
+        "INSERT INTO orders_products (order_id, product_id, quantity) VALUES ($1, $2, $3)",
+        [id, orderProduct.productId, orderProduct.quantity]
+      );
+    }
+
+    await client.query("COMMIT");
+
+    return id;
+  } catch (err) {
+    await client.query("ROLLBACK");
+
+    throw err;
+  }
+}
+
 dotenv.config();
 
 const client = new Client({
@@ -126,4 +159,5 @@ export {
   getProductById,
   updateProduct,
   deleteProduct,
+  createOrder,
 };
