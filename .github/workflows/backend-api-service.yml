@@ -62,3 +62,35 @@ jobs:
 
       - name: Build project
         run: npm run build
+
+  deploy:
+    name: Build & Push Docker Images
+    runs-on: ubuntu-latest
+    needs: build
+
+    defaults:
+      run:
+        working-directory: backend/api-service
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build migrate and app images
+        env:
+          GITHUB_USERNAME: ${{ github.repository_owner }}
+        run: |
+          docker compose build migrate app
+
+      - name: Push migrate and app images
+        env:
+          GITHUB_USERNAME: ${{ github.repository_owner }}
+        run: |
+          docker compose push migrate app
