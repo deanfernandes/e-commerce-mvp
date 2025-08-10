@@ -21,7 +21,7 @@ services:
       - app-network
 
   app:
-    image: ghcr.io/${GITHUB_USERNAME}/api-service-migrate:latest
+    image: ghcr.io/${GITHUB_USERNAME}/api-service-app:latest
     build: .
     ports:
       - "3000:3000"
