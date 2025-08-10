@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import * as databaseService from "../services/database-service";
 import logger from "../services/logger-service";
 
@@ -10,12 +10,9 @@ export const createOrder = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid order input" });
     }
 
-    const createdOrder = await databaseService.createOrder(
-      userId,
-      orderProducts
-    );
+    const id = await databaseService.createOrder(userId, orderProducts);
 
-    return res.status(201).json(createdOrder);
+    return res.status(201).json(id);
   } catch (err) {
     logger.error("Failed to create order", err);
     return res.status(500).json({ error: "Internal server error" });
