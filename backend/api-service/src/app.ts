@@ -13,6 +13,6 @@ app.use(express.json());
 
 app.use("/api/users", authMiddleware, userRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/products", productsRoutes);
+app.use("/api/products", authMiddleware, productsRoutes);
 
 export default app;
