@@ -14,7 +14,7 @@ export const createProduct = async (req: Request, res: Response) => {
     if (
       typeof product.title !== "string" ||
       typeof product.description !== "string" ||
-      typeof product.price !== "string"
+      typeof product.price !== "number"
     ) {
       return res.status(400).json({ error: "Invalid product input types" });
     }
@@ -74,7 +74,7 @@ export const updateProduct = async (req: Request, res: Response) => {
     if (
       typeof newProduct.title !== "string" ||
       typeof newProduct.description !== "string" ||
-      typeof newProduct.price !== "string"
+      typeof newProduct.price !== "number"
     ) {
       return res.status(400).json({ error: "Invalid product input types" });
     }
