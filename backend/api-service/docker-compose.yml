@@ -8,6 +8,12 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   migrate:
     image: ghcr.io/${GITHUB_USERNAME}/api-service-migrate:latest
@@ -16,7 +22,8 @@ services:
     environment:
       DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/postgres
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - app-network
 
@@ -32,7 +39,8 @@ services:
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_EXPIRES: ${JWT_EXPIRES}
     depends_on:
-      - migrate
+      migrate:
+        condition: service_completed_successfully
     networks:
       - app-network
 
