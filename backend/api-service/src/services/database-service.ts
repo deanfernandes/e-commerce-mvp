@@ -26,8 +26,8 @@ async function getUserById(id: number): Promise<User> {
 
 async function updateUser(user: User): Promise<void> {
   await client.query(
-    "UPDATE users SET name = $1, email = $2, password = $3 WHERE id = $4",
-    [user.name, user.email, user.password, user.id]
+    "UPDATE users SET name = $1, email = $2, password = $3 email_verified = $5 WHERE id = $6",
+    [user.name, user.email, user.password, user.email_verified, user.id]
   );
 }
 
