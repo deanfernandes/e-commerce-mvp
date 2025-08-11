@@ -10,6 +10,9 @@ jest.mock("../services/logger-service");
 jest.mock("jsonwebtoken", () => ({
   sign: jest.fn(),
 }));
+jest.mock("../services/kafka-producer-service", () => ({
+  producer: { send: jest.fn() },
+}));
 
 import { Request, Response } from "express";
 import { login, register } from "../controllers/auth-controller";
@@ -17,6 +20,8 @@ import User from "../models/user";
 import { hashPassword, verifyPassword } from "../services/password-service";
 import { createUser, getUserByEmail } from "../services/database-service";
 import { sign } from "jsonwebtoken";
+import { producer } from "../services/kafka-producer-service";
+import jwt from "jsonwebtoken";
 
 describe("auth controller", () => {
   test("register", async () => {
@@ -25,6 +30,7 @@ describe("auth controller", () => {
       name: "John Doe",
       email: "john@example.com",
       password: "password123",
+      email_verified: false,
     };
     const mockReq = {
       body: mockUser,
@@ -33,11 +39,22 @@ describe("auth controller", () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn().mockReturnThis(),
     } as Partial<Response> as Response;
+    const mockToken = "mockToken";
+    const mockSign = sign as jest.MockedFunction<typeof sign>;
+    mockSign.mockImplementation(() => mockToken);
+    const mockSend = producer.send as jest.MockedFunction<typeof producer.send>;
+    mockSend.mockResolvedValue([]);
 
     await register(mockReq, mockRes);
 
     expect(mockRes.status).toHaveBeenCalledWith(201);
     expect(mockRes.json).toHaveBeenCalled();
+    expect(mockSend).toHaveBeenCalledWith({
+      topic: "user-registered",
+      messages: [
+        { value: JSON.stringify({ email: mockUser.email, token: mockToken }) },
+      ],
+    });
   });
 
   test("login", async () => {
@@ -46,6 +63,7 @@ describe("auth controller", () => {
       name: "John Doe",
       email: "john@example.com",
       password: "password123",
+      email_verified: true,
     };
     const mockReq = {
       body: {

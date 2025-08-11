@@ -38,6 +38,7 @@ describe("users controller", () => {
       name: "John Doe",
       email: "john@example.com",
       password: mockPassword,
+      email_verified: false,
     };
     const mockReq = {
       body: mockUser,
@@ -92,6 +93,7 @@ describe("users controller", () => {
       name: "John Doe",
       email: "john@example.com",
       password: "password123",
+      email_verified: false,
     };
     const mockGetUserById = databaseGetUserById as jest.MockedFunction<
       typeof databaseGetUserById
@@ -110,6 +112,7 @@ describe("users controller", () => {
       name: "John Doe",
       email: "john@example.com",
       password: mockPassword,
+      email_verified: false,
     };
     const mockReq = {
       params: {
@@ -126,6 +129,7 @@ describe("users controller", () => {
       name: "John Doe",
       email: "john@example.com",
       password: "password123",
+      email_verified: false,
     };
 
     const mockGetUserById = databaseGetUserById as jest.MockedFunction<
@@ -170,6 +174,7 @@ describe("users controller", () => {
       name: "John Doe",
       email: "john@example.com",
       password: "password123",
+      email_verified: false,
     };
     mockGetUserById.mockResolvedValue(mockUser);
     const mockDeleteUser = databaseDeleteUser as jest.MockedFunction<

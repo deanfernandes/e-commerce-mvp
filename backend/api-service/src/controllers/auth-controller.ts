@@ -9,6 +9,7 @@ import logger from "../services/logger-service";
 import type User from "../models/user";
 import type { Request, Response } from "express";
 import type { StringValue } from "ms";
+import { producer } from "../services/kafka-producer-service";
 
 type JwtPayload = {
   email: string;
@@ -34,6 +35,17 @@ export const register = async (req: Request, res: Response) => {
 
     const createdUser = await createUser(user);
 
+    const payload: JwtPayload = { email: user.email };
+    const token = jwt.sign(payload, process.env.JWT_SECRET_KEY!, {
+      expiresIn: process.env.JWT_EXPIRES! as StringValue,
+    });
+    await producer.send({
+      topic: "user-registered",
+      messages: [
+        { value: JSON.stringify({ email: user.email, token: token }) },
+      ],
+    });
+
     return res.status(201).json(createdUser);
   } catch (err) {
     logger.error("Failed register user", err);
@@ -49,15 +61,16 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
+    if (!user.email_verified) {
+      return res.status(401).json({ message: "Email is not verified" });
+    }
+
     const match = await verifyPassword(password, user.password);
     if (!match) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    const payload: JwtPayload = {
-      email: user.email,
-    };
-    const token = jwt.sign(payload, process.env.JWT_SECRET_KEY!, {
+    const token = jwt.sign({}, process.env.JWT_SECRET_KEY!, {
       expiresIn: process.env.JWT_EXPIRES! as StringValue,
     });
 
@@ -81,9 +94,7 @@ export const confirm = async (req: Request, res: Response) => {
       process.env.JWT_SECRET_KEY!
     ) as JwtPayload;
 
-    const email = decoded.email;
-
-    const user = await getUserByEmail(email);
+    const user = await getUserByEmail(decoded.email);
     if (!user) {
       return res.status(400).json({ message: "Invalid token" });
     }
