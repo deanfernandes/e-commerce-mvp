@@ -49,8 +49,36 @@ async function createProduct(product: Product): Promise<Product> {
   ).rows[0];
 }
 
-async function getProducts(): Promise<Product[]> {
-  return (await client.query("SELECT * FROM products")).rows;
+async function getProducts(
+  title?: string,
+  minPrice?: number,
+  maxPrice?: number
+): Promise<Product[]> {
+  const conditions: string[] = [];
+  const values: any[] = [];
+
+  if (title) {
+    values.push(`%${title}%`);
+    conditions.push(`title ILIKE $${values.length}`);
+  }
+
+  if (minPrice !== undefined) {
+    values.push(minPrice);
+    conditions.push(`price >= $${values.length}`);
+  }
+
+  if (maxPrice !== undefined) {
+    values.push(maxPrice);
+    conditions.push(`price <= $${values.length}`);
+  }
+
+  let query = "SELECT * FROM products";
+  if (conditions.length > 0) {
+    query += " WHERE " + conditions.join(" AND ");
+  }
+
+  const result = await client.query(query, values);
+  return result.rows;
 }
 
 async function getProductById(id: number): Promise<Product> {

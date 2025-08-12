@@ -1,5 +1,5 @@
-const swaggerJSDoc = require("swagger-jsdoc");
-const path = require("path");
+import swaggerJSDoc from "swagger-jsdoc";
+import path from "path";
 
 const options = {
   definition: {
@@ -14,10 +14,25 @@ const options = {
         url: "/api",
       },
     ],
+
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
   },
   apis: [path.join(__dirname, "..", "/routes/*.js")],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
 
-module.exports = swaggerSpec;
+export = swaggerSpec;

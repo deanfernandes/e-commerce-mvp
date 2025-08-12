@@ -28,9 +28,20 @@ export const createProduct = async (req: Request, res: Response) => {
   }
 };
 
+function parseNumberParam(param: unknown): number | undefined {
+  const num = Number(param);
+  return !isNaN(num) ? num : undefined;
+}
+
 export const getProducts = async (req: Request, res: Response) => {
   try {
-    const products = await databaseService.getProducts();
+    const minPrice = parseNumberParam(req.query.minPrice);
+    const maxPrice = parseNumberParam(req.query.maxPrice);
+    const products = await databaseService.getProducts(
+      typeof req.query.title === "string" ? req.query.title : undefined,
+      minPrice,
+      maxPrice
+    );
     return res.json(products);
   } catch (err) {
     logger.error("Failed to get products", err);
