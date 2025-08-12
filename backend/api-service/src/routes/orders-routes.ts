@@ -1,5 +1,6 @@
 import express from "express";
 import * as ordersController from "../controllers/orders-controller";
+import authorizeRole from "../middleware/authorizeRole";
 
 const router = express.Router();
 
@@ -52,6 +53,6 @@ const router = express.Router();
  *       500:
  *         description: Internal server error
  */
-router.post("/", ordersController.createOrder);
+router.post("/", authorizeRole("user", "admin"), ordersController.createOrder);
 
 export default router;

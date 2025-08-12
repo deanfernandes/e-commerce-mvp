@@ -1,5 +1,6 @@
 import express from "express";
 import * as productsController from "../controllers/products-controller";
+import authorizeRole from "../middleware/authorizeRole";
 
 const router = express.Router();
 
@@ -52,7 +53,7 @@ const router = express.Router();
  *       500:
  *         description: Internal server error
  */
-router.post("/", productsController.createProduct);
+router.post("/", authorizeRole("admin"), productsController.createProduct);
 
 /**
  * @swagger
@@ -82,7 +83,7 @@ router.post("/", productsController.createProduct);
  *       500:
  *         description: Internal server error
  */
-router.get("/", productsController.getProducts);
+router.get("/", authorizeRole("user", "admin"), productsController.getProducts);
 
 /**
  * @swagger
@@ -119,7 +120,11 @@ router.get("/", productsController.getProducts);
  *       500:
  *         description: Internal server error
  */
-router.get("/:id", productsController.getProductById);
+router.get(
+  "/:id",
+  authorizeRole("user", "admin"),
+  productsController.getProductById
+);
 
 /**
  * @swagger
@@ -166,7 +171,7 @@ router.get("/:id", productsController.getProductById);
  *       500:
  *         description: Internal server error
  */
-router.put("/:id", productsController.updateProduct);
+router.put("/:id", authorizeRole("admin"), productsController.updateProduct);
 
 /**
  * @swagger
@@ -190,6 +195,6 @@ router.put("/:id", productsController.updateProduct);
  *       500:
  *         description: Internal server error
  */
-router.delete("/:id", productsController.deleteProduct);
+router.delete("/:id", authorizeRole("admin"), productsController.deleteProduct);
 
 export default router;

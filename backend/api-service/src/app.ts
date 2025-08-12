@@ -6,10 +6,11 @@ import authRoutes from "./routes/auth-routes";
 import productsRoutes from "./routes/products-routes";
 import ordersRoutes from "./routes/orders-routes";
 import morgan from "morgan";
-import authMiddleware from "./middleware/auth-middleware";
+import authenticateJwt from "./middleware/authenticateJwt";
 import cors, { type CorsOptions } from "cors";
 import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
+import authorizeRole from "./middleware/authorizeRole";
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./swagger/swagger");
 
@@ -49,9 +50,9 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("combined"));
 }
 
-app.use("/api/users", authMiddleware, userRoutes);
+app.use("/api/users", authenticateJwt, authorizeRole("admin"), userRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/products", authMiddleware, productsRoutes);
-app.use("/api/orders", authMiddleware, ordersRoutes);
+app.use("/api/products", authenticateJwt, productsRoutes);
+app.use("/api/orders", authenticateJwt, ordersRoutes);
 
 export default app;

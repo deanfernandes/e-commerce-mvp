@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express";
 
 dotenv.config();
 
-const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+const authenticateJwt = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader?.split(" ")[1];
 
@@ -17,4 +17,4 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
-export default authMiddleware;
+export default authenticateJwt;
