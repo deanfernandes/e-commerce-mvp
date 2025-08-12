@@ -10,9 +10,9 @@ const authenticateJwt = (req: Request, res: Response, next: NextFunction) => {
 
   if (!token) return res.sendStatus(401);
 
-  jwt.verify(token, process.env.JWT_SECRET_KEY!, (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET_KEY!, (err, payload) => {
     if (err) return res.sendStatus(403);
-    (req as any).user = user;
+    (req as any).user = (payload as any).user;
     next();
   });
 };
