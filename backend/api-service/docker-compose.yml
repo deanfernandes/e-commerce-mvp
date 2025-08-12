@@ -39,6 +39,8 @@ services:
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_EXPIRES: ${JWT_EXPIRES}
       KAFKA_BROKER: ${KAFKA_BROKER}
+      REVERSE_PROXY_ORIGIN: ${REVERSE_PROXY_ORIGIN}
+      NODE_ENV: ${NODE_ENV}
     depends_on:
       migrate:
         condition: service_completed_successfully

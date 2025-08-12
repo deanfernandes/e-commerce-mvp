@@ -5,10 +5,30 @@ import productsRoutes from "./routes/products-routes";
 import ordersRoutes from "./routes/orders-routes";
 import morgan from "morgan";
 import authMiddleware from "./middleware/auth-middleware";
+import cors, { type CorsOptions } from "cors";
 
 const app = express();
 
-app.use(morgan("dev"));
+const allowNoOrigin = process.env.NODE_ENV === "development";
+var whitelist = [process.env.REVERSE_PROXY_ORIGIN];
+var corsOptions: CorsOptions = {
+  origin: function (origin, callback) {
+    if (!origin && allowNoOrigin) {
+      callback(null, true); // Allow Postman
+    } else if (origin && whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error(`Not allowed by CORS: ${origin}`));
+    }
+  },
+};
+app.use(cors(corsOptions));
+
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+} else {
+  app.use(morgan("combined"));
+}
 
 app.use(express.json());
 
