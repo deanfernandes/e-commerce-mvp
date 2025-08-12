@@ -6,6 +6,12 @@ import ordersRoutes from "./routes/orders-routes";
 import morgan from "morgan";
 import authMiddleware from "./middleware/auth-middleware";
 import cors, { type CorsOptions } from "cors";
+import dotenv from "dotenv";
+import logger from "./services/logger-service";
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./swagger/swagger");
+
+dotenv.config();
 
 const app = express();
 
@@ -26,6 +32,8 @@ app.use(cors(corsOptions));
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
+
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 } else {
   app.use(morgan("combined"));
 }
