@@ -1,3 +1,5 @@
+const RATE_LIMIT_WINDOW_MINUTES = 15;
+
 import express from "express";
 import userRoutes from "./routes/users-routes";
 import authRoutes from "./routes/auth-routes";
@@ -7,7 +9,7 @@ import morgan from "morgan";
 import authMiddleware from "./middleware/auth-middleware";
 import cors, { type CorsOptions } from "cors";
 import dotenv from "dotenv";
-import logger from "./services/logger-service";
+import rateLimit from "express-rate-limit";
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./swagger/swagger");
 
@@ -30,6 +32,15 @@ var corsOptions: CorsOptions = {
 };
 app.use(cors(corsOptions));
 
+app.use(express.json());
+
+const limiter = rateLimit({
+  windowMs: RATE_LIMIT_WINDOW_MINUTES * 60 * 1000,
+  max: 100,
+  message: "Too many requests from this IP, please try again later.",
+});
+app.use(limiter);
+
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 
@@ -37,8 +48,6 @@ if (process.env.NODE_ENV === "development") {
 } else {
   app.use(morgan("combined"));
 }
-
-app.use(express.json());
 
 app.use("/api/users", authMiddleware, userRoutes);
 app.use("/api/auth", authRoutes);
