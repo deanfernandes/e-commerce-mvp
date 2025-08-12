@@ -139,12 +139,16 @@ const client = new Client({
   connectionString: process.env.DATABASE_URL,
 });
 (async () => {
-  await client.connect();
+  try {
+    await client.connect();
 
-  //TODO: rm
-  seedProducts();
+    //TODO: rm
+    seedProducts();
 
-  logger.info(`Connected database`);
+    logger.info(`Connected database`);
+  } catch (err) {
+    logger.error(`Failed to connect database: ${err}`);
+  }
 })();
 
 export {
