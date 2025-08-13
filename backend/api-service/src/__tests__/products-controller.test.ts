@@ -53,7 +53,7 @@ describe("products controller", () => {
     >;
     mockGetProducts.mockResolvedValue(mockProducts);
 
-    const mockReq = {} as Request;
+    const mockReq = { query: {} } as Request;
     const mockRes = {
       json: jest.fn().mockReturnThis(),
     } as Partial<Response> as Response;
