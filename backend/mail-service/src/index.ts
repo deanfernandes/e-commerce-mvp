@@ -1,6 +1,7 @@
-require("dotenv").config();
-const { startConsumer } = require("./kafkaConsumer");
-const { sendConfirmEmail } = require("./mailClient");
+import dotenv from "dotenv";
+dotenv.config();
+import { startConsumer } from "./kafkaConsumer";
+import { sendConfirmEmail } from "./mailClient";
 
 async function main() {
   await startConsumer(async (userEvent) => {

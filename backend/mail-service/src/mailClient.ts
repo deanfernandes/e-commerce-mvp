@@ -1,4 +1,4 @@
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -8,7 +8,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-async function sendConfirmEmail(email, token) {
+export async function sendConfirmEmail(email, token) {
   const confirmUrl = `https://${process.env.API_HOST}/confirm?token=${token}`;
 
   const mailOptions = {
@@ -31,5 +31,3 @@ async function sendConfirmEmail(email, token) {
     console.error(`Failed to send confirmation email to ${email}:`, error);
   }
 }
-
-module.exports = { sendConfirmEmail };
