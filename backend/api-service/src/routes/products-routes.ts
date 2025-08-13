@@ -62,6 +62,26 @@ router.post("/", authorizeRole("admin"), productsController.createProduct);
  *     tags:
  *       - products
  *     summary: Get all products
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: title
+ *         schema:
+ *           type: string
+ *         description: Filter products by title (case insensitive substring match)
+ *       - in: query
+ *         name: minPrice
+ *         schema:
+ *           type: number
+ *           minimum: 0
+ *         description: Minimum price filter
+ *       - in: query
+ *         name: maxPrice
+ *         schema:
+ *           type: number
+ *           minimum: 0
+ *         description: Maximum price filter
  *     responses:
  *       200:
  *         description: A list of products
