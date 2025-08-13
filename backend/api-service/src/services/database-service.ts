@@ -5,6 +5,7 @@ import logger from "./logger-service";
 import type Product from "../models/product";
 import Order from "../models/Order";
 import OrderProduct from "../models/OrderProduct";
+import type { SortBy, Order as OrderType } from "../types/Product";
 
 async function createUser(user: User): Promise<User> {
   return (
@@ -52,11 +53,14 @@ async function createProduct(product: Product): Promise<Product> {
 async function getProducts(
   title?: string,
   minPrice?: number,
-  maxPrice?: number
+  maxPrice?: number,
+  sortBy?: SortBy,
+  order?: OrderType
 ): Promise<Product[]> {
   const conditions: string[] = [];
   const values: any[] = [];
 
+  // Filtering
   if (title) {
     values.push(`%${title}%`);
     conditions.push(`title ILIKE $${values.length}`);
@@ -75,6 +79,15 @@ async function getProducts(
   let query = "SELECT * FROM products";
   if (conditions.length > 0) {
     query += " WHERE " + conditions.join(" AND ");
+  }
+
+  // Sorting
+  if (sortBy) {
+    query += ` ORDER BY ${sortBy}`;
+  }
+
+  if (order) {
+    query += ` ${order.toUpperCase()}`;
   }
 
   const result = await client.query(query, values);

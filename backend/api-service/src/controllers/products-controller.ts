@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Product from "../models/product";
 import * as databaseService from "../services/database-service";
 import logger from "../services/logger-service";
+import { Order, SortBy } from "../types/Product";
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
@@ -37,10 +38,23 @@ export const getProducts = async (req: Request, res: Response) => {
   try {
     const minPrice = parseNumberParam(req.query.minPrice);
     const maxPrice = parseNumberParam(req.query.maxPrice);
+    const sortBy: SortBy | undefined =
+      typeof req.query.sortBy === "string" &&
+      (req.query.sortBy === "title" || req.query.sortBy === "price")
+        ? req.query.sortBy
+        : undefined;
+    const order: Order | undefined =
+      typeof req.query.order === "string" &&
+      (req.query.order === "asc" || req.query.order === "desc")
+        ? req.query.order
+        : undefined;
+
     const products = await databaseService.getProducts(
       typeof req.query.title === "string" ? req.query.title : undefined,
       minPrice,
-      maxPrice
+      maxPrice,
+      sortBy,
+      order
     );
     return res.json(products);
   } catch (err) {

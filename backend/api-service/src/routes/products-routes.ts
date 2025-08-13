@@ -69,7 +69,7 @@ router.post("/", authorizeRole("admin"), productsController.createProduct);
  *         name: title
  *         schema:
  *           type: string
- *         description: Filter products by title (case insensitive substring match)
+ *         description: Filter products by title (case-insensitive substring match)
  *       - in: query
  *         name: minPrice
  *         schema:
@@ -82,6 +82,18 @@ router.post("/", authorizeRole("admin"), productsController.createProduct);
  *           type: number
  *           minimum: 0
  *         description: Maximum price filter
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [title, price]
+ *         description: Sort products by "title" or "price"
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *         description: Sort order "asc" for ascending, "desc" for descending
  *     responses:
  *       200:
  *         description: A list of products
