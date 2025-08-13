@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import * as databaseService from "../services/database-service";
 import logger from "../services/logger-service";
+import { producer } from "../services/kafka-producer-service";
 
 export const createOrder = async (req: Request, res: Response) => {
   try {
@@ -11,6 +12,22 @@ export const createOrder = async (req: Request, res: Response) => {
     }
 
     const id = await databaseService.createOrder(userId, orderProducts);
+
+    const { email } = await databaseService.getUserById(userId);
+    const dbOrderProducts = await databaseService.getOrderProducts(id);
+
+    await producer.send({
+      topic: "order-created",
+      messages: [
+        {
+          value: JSON.stringify({
+            email,
+            orderId: id,
+            orderProducts: dbOrderProducts,
+          }),
+        },
+      ],
+    });
 
     return res.status(201).json(id);
   } catch (err) {

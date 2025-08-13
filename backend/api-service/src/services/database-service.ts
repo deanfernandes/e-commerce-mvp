@@ -174,6 +174,19 @@ async function createOrder(
   }
 }
 
+export async function getOrderProducts(orderId: number): Promise<any[]> {
+  const result = await client.query(
+    `
+    SELECT op.quantity, p.id AS product_id, p.title
+    FROM orders_products op
+    JOIN products p ON op.product_id = p.id
+    WHERE op.order_id = $1;
+    `,
+    [orderId]
+  );
+  return result.rows;
+}
+
 dotenv.config();
 
 const client = new Client({
