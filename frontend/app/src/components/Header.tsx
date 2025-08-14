@@ -3,19 +3,21 @@ import logo from "../assets/logo.jpg";
 import { Link } from "react-router";
 import ThemeToggleButton from "./ThemeToggleButton";
 import HeaderLink from "./HeaderLink";
+import useAuthContext from "../hooks/useAuthContext";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
+  const { user, logout } = useAuthContext();
 
   return (
-    <header className="bg-blue-500 p-5 flex justify-between relative">
+    <header className="bg-blue-300 p-5 flex justify-between relative">
       <div className="flex space-x-5 items-center">
         <Link to="/" onClick={() => setMenuOpen(false)}>
           <img src={logo} alt="logo" className="w-16 h-16" />
         </Link>
 
         <h1 className="text-3xl select-none font-bold hidden md:block text-white">
-          header
+          e-commerce-mvp
         </h1>
       </div>
 
@@ -23,8 +25,14 @@ const Header = () => {
         <ThemeToggleButton />
 
         <nav className="hidden md:flex space-x-5 items-center">
-          <HeaderLink text="Sign Up" to="/signup" />
-          <HeaderLink text="Login" to="/login" />
+          {!user ? (
+            <>
+              <HeaderLink text="Sign Up" to="/signup" />
+              <HeaderLink text="Login" to="/login" />
+            </>
+          ) : (
+            <HeaderLink text="Logout" to="/" onClick={() => logout()} />
+          )}
         </nav>
 
         <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
@@ -52,19 +60,30 @@ const Header = () => {
             )}
           </svg>
         </button>
+
+        {user && (
+          <p className="underline text-white uppercase text-xl">{user.name}</p>
+        )}
       </div>
+
       {menuOpen && (
         <nav className="flex flex-col absolute top-full right-0 md:hidden z-10 shadow-md">
-          <HeaderLink
-            text="Sign Up"
-            to="/signup"
-            onClick={() => setMenuOpen(false)}
-          />
-          <HeaderLink
-            text="Login"
-            to="/login"
-            onClick={() => setMenuOpen(false)}
-          />
+          {!user ? (
+            <>
+              <HeaderLink
+                text="Sign Up"
+                to="/signup"
+                onClick={() => setMenuOpen(false)}
+              />
+              <HeaderLink
+                text="Login"
+                to="/login"
+                onClick={() => setMenuOpen(false)}
+              />
+            </>
+          ) : (
+            <HeaderLink text="Logout" to="/" onClick={() => logout()} />
+          )}
         </nav>
       )}
     </header>

@@ -5,13 +5,16 @@ import App from "./App.tsx";
 import "font-awesome/css/font-awesome.min.css";
 import { BrowserRouter } from "react-router";
 import ThemeContextProvider from "./context/theme/ThemeContextProvider.tsx";
+import AuthContextProvider from "./context/auth/AuthContextProvider.tsx";
 
 createRoot(document.getElementById("root")!).render(
-  <ThemeContextProvider>
-    <BrowserRouter>
-      <StrictMode>
-        <App />
-      </StrictMode>
-    </BrowserRouter>
-  </ThemeContextProvider>
+  <AuthContextProvider>
+    <ThemeContextProvider>
+      <BrowserRouter>
+        <StrictMode>
+          <App />
+        </StrictMode>
+      </BrowserRouter>
+    </ThemeContextProvider>
+  </AuthContextProvider>
 );

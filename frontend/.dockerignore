@@ -3,3 +3,4 @@ app/.gitignore
 app/node_modules
 app/dist
 nginx/ssl
+docker_run.sh
