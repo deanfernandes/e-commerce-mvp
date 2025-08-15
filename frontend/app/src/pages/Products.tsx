@@ -19,7 +19,6 @@ const Products = () => {
         setLoading(true);
 
         console.log(`Fetching products...`);
-        console.log(token);
 
         const res = await axios.get<Product[]>("/api/products", {
           timeout: 5000,

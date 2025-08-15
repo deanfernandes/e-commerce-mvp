@@ -11,6 +11,7 @@ import useAuthContext from "./hooks/useAuthContext";
 import Products from "./pages/Products";
 import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
+import Favorites from "./pages/Favorites";
 
 function App() {
   const { user, token } = useAuthContext();
@@ -42,6 +43,10 @@ function App() {
           <Route
             path="/cart"
             element={user ? <Cart /> : <Navigate to="/login" replace />}
+          />
+          <Route
+            path="/favorites"
+            element={user ? <Favorites /> : <Navigate to="/login" replace />}
           />
           <Route path="*" element={<NotFound />} />
         </Route>
