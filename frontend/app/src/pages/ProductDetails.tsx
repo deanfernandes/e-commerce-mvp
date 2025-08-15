@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import type { Product } from "../types/Product";
 import useAuthContext from "../hooks/useAuthContext";
 import axios from "axios";
+import { useCartContext } from "../hooks/useCartContext";
 
 const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -10,6 +11,7 @@ const ProductDetails = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { token } = useAuthContext();
+  const { addToCart } = useCartContext();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -57,8 +59,9 @@ const ProductDetails = () => {
   }, [id]);
 
   const handleAddToCart = () => {
-    // TODO:
-    alert(`Added "${product?.title}" to cart!`);
+    addToCart(product as Product, 1);
+
+    console.log(`Added "${product?.title}" to cart!`);
   };
 
   if (loading) return <p className="text-center text-sm">Loading...</p>;

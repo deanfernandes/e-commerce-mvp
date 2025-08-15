@@ -22,6 +22,8 @@ const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
+    console.log(token);
+
     if (token) {
       localStorage.setItem(TOKEN_STORAGE_KEY, token);
 

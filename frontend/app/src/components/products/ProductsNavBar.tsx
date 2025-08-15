@@ -2,7 +2,7 @@ import { NavLink } from "react-router";
 
 const ProductsNavBar = () => {
   return (
-    <nav className="bg-primary-dark text-gray-200 flex space-x-6 py-2">
+    <nav className="bg-blue-500 text-white flex space-x-6 py-2">
       <NavLink
         to="/products"
         className={({ isActive }) =>

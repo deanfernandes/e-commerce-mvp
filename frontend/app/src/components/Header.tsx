@@ -4,6 +4,7 @@ import { Link } from "react-router";
 import ThemeToggleButton from "./ThemeToggleButton";
 import HeaderLink from "./HeaderLink";
 import useAuthContext from "../hooks/useAuthContext";
+import { CartButton } from "./cart/CartButton";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
@@ -62,7 +63,13 @@ const Header = () => {
         </button>
 
         {user && (
-          <p className="underline text-white uppercase text-xl">{user.name}</p>
+          <>
+            <p className="underline text-white uppercase text-xl">
+              {user.name}
+            </p>
+
+            <CartButton />
+          </>
         )}
       </div>
 
