@@ -73,7 +73,12 @@ export const getProductById = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    return res.json(product);
+    const productWithNumberPrice = {
+      ...product,
+      price: Number(product.price),
+    };
+
+    return res.json(productWithNumberPrice);
   } catch (err) {
     logger.error("Failed to get product by ID", err);
     return res.status(500).json({ error: "Internal server error" });

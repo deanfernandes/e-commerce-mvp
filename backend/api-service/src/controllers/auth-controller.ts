@@ -61,18 +61,22 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    if (!user.email_verified) {
-      return res.status(401).json({ message: "Email is not verified" });
-    }
-
     const match = await verifyPassword(password, user.password);
     if (!match) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    const token = jwt.sign({ user: "user" }, process.env.JWT_SECRET_KEY!, {
-      expiresIn: process.env.JWT_EXPIRES! as StringValue,
-    });
+    if (!user.email_verified) {
+      return res.status(401).json({ message: "Email is not verified" });
+    }
+
+    const token = jwt.sign(
+      { user: "user", name: user.name },
+      process.env.JWT_SECRET_KEY!,
+      {
+        expiresIn: process.env.JWT_EXPIRES! as StringValue,
+      }
+    );
 
     res.json({ token });
   } catch (err: any) {
