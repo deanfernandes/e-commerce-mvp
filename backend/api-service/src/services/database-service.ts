@@ -187,6 +187,73 @@ export async function getOrderProducts(orderId: number): Promise<any[]> {
   return result.rows;
 }
 
+export async function insertFavorite(
+  userId: number,
+  productId: number
+): Promise<void> {
+  try {
+    await client.query(
+      `
+    INSERT INTO favorites
+    (user_id, product_id)
+    VALUES ($1, $2)
+    `,
+      [userId, productId]
+    );
+
+    logger.info(
+      `inserted favorite user id: ${userId} product id: ${productId}`
+    );
+  } catch (err) {
+    logger.error(
+      `failed to insert favorite user id: ${userId} product id: ${productId}: ${err}`
+    );
+    throw err;
+  }
+}
+
+export async function selectFavoritesByUserId(
+  userId: number
+): Promise<Product[]> {
+  try {
+    const result = await client.query(
+      `
+      SELECT p.*
+      FROM favorites f
+      JOIN products p ON f.product_id = p.id
+      WHERE f.user_id = $1
+      `,
+      [userId]
+    );
+
+    logger.info(`Got user ${userId} favorites with product details`);
+
+    return result.rows;
+  } catch (err) {
+    logger.error(`Failed to get user ${userId} favorites: ${err}`);
+    throw err;
+  }
+}
+
+export async function deleteFavorite(
+  userId: number,
+  productId: number
+): Promise<void> {
+  try {
+    await client.query(
+      "DELETE FROM favorites WHERE user_id = $1 AND product_id = $2",
+      [userId, productId]
+    );
+
+    logger.info(`deleted user ${userId} favorite ${productId}`);
+  } catch (err) {
+    logger.error(
+      `failed to delete user ${userId} favorite ${productId}: ${err}`
+    );
+    throw err;
+  }
+}
+
 dotenv.config();
 
 const client = new Client({
@@ -195,9 +262,6 @@ const client = new Client({
 (async () => {
   try {
     await client.connect();
-
-    //TODO: rm
-    seedProducts();
 
     logger.info(`Connected database`);
   } catch (err) {

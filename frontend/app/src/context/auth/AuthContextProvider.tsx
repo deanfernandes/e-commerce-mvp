@@ -12,6 +12,7 @@ const TOKEN_STORAGE_KEY = "token";
 type JwtPayload = {
   name: string;
   user: string;
+  id: number;
 };
 
 const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
@@ -28,7 +29,7 @@ const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       localStorage.setItem(TOKEN_STORAGE_KEY, token);
 
       const decoded = jwtDecode<JwtPayload>(token);
-      setUser({ name: decoded.name, user: decoded.user });
+      setUser({ name: decoded.name, user: decoded.user, id: decoded.id });
     } else {
       localStorage.removeItem(TOKEN_STORAGE_KEY);
       setUser(null);

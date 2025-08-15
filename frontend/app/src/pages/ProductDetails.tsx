@@ -4,14 +4,16 @@ import type { Product } from "../types/Product";
 import useAuthContext from "../hooks/useAuthContext";
 import axios from "axios";
 import { useCartContext } from "../hooks/useCartContext";
+import FavoriteToggleButton from "../components/products/FavoriteToggleButton";
 
 const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { token } = useAuthContext();
+  const { token, user } = useAuthContext();
   const { addToCart } = useCartContext();
+  const [favorites, setFavorites] = useState<Product[]>([]);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -58,6 +60,34 @@ const ProductDetails = () => {
     fetchProduct();
   }, [id]);
 
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const res = await axios.get<Product[]>(
+          `/api/users/${user?.id}/favorites`,
+          {
+            timeout: 5000,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (res.status === 200) {
+          setFavorites(res.data);
+        }
+      } catch (err) {
+        if (axios.isAxiosError(err)) {
+          if (err.response && err.response.data.message) {
+            return;
+          }
+        }
+      }
+    };
+
+    fetchFavorites();
+  }, []);
+
   const handleAddToCart = () => {
     addToCart(product as Product, 1);
 
@@ -90,6 +120,36 @@ const ProductDetails = () => {
       >
         Add to Cart
       </button>
+
+      <FavoriteToggleButton
+        favorited={favorites.some((fav) => fav.id === product.id)}
+        onToggle={async () => {
+          try {
+            const isFavorited = favorites.some((fav) => fav.id === product.id);
+
+            if (isFavorited) {
+              await axios.delete(
+                `/api/users/${user?.id}/favorites/${product.id}`,
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                }
+              );
+              setFavorites((prev) =>
+                prev.filter((fav) => fav.id !== product.id)
+              );
+            } else {
+              await axios.post(
+                `/api/users/${user?.id}/favorites`,
+                { productId: product.id },
+                { headers: { Authorization: `Bearer ${token}` } }
+              );
+              setFavorites((prev) => [...prev, product]);
+            }
+          } catch (err) {
+            console.error("Failed to toggle favorite", err);
+          }
+        }}
+      />
     </div>
   );
 };

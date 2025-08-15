@@ -1,5 +1,7 @@
 import express from "express";
 import * as usersController from "../controllers/users-controller";
+import favoritesRouter from "./favorites-routes";
+import authorizeRole from "../middleware/authorizeRole";
 
 const router = express.Router();
 
@@ -36,7 +38,7 @@ const router = express.Router();
  *                 name:
  *                   type: string
  */
-router.post("/", usersController.createUser);
+router.post("/", authorizeRole("admin"), usersController.createUser);
 
 /**
  * @swagger
@@ -60,7 +62,7 @@ router.post("/", usersController.createUser);
  *                   name:
  *                     type: string
  */
-router.get("/", usersController.getUsers);
+router.get("/", authorizeRole("admin"), usersController.getUsers);
 
 /**
  * @swagger
@@ -91,7 +93,7 @@ router.get("/", usersController.getUsers);
  *       404:
  *         description: User not found
  */
-router.get("/:id", usersController.getUserById);
+router.get("/:id", authorizeRole("admin"), usersController.getUserById);
 
 /**
  * @swagger
@@ -133,7 +135,7 @@ router.get("/:id", usersController.getUserById);
  *       404:
  *         description: User not found
  */
-router.put("/:id", usersController.updateUser);
+router.put("/:id", authorizeRole("admin"), usersController.updateUser);
 
 /**
  * @swagger
@@ -155,6 +157,12 @@ router.put("/:id", usersController.updateUser);
  *       404:
  *         description: User not found
  */
-router.delete("/:id", usersController.deleteUser);
+router.delete("/:id", authorizeRole("admin"), usersController.deleteUser);
+
+router.use(
+  "/:userId/favorites",
+  authorizeRole("admin", "user"),
+  favoritesRouter
+);
 
 export default router;

@@ -89,7 +89,14 @@ const Header = () => {
               />
             </>
           ) : (
-            <HeaderLink text="Logout" to="/" onClick={() => logout()} />
+            <HeaderLink
+              text="Logout"
+              to="/"
+              onClick={() => {
+                logout();
+                setMenuOpen(false);
+              }}
+            />
           )}
         </nav>
       )}
