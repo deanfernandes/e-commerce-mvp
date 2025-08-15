@@ -11,25 +11,24 @@ const TOKEN_STORAGE_KEY = "token";
 
 type JwtPayload = {
   name: string;
+  user: string;
 };
 
 const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
-  const [token, setToken] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(() => {
+    console.log(`Get token`);
+    return localStorage.getItem(TOKEN_STORAGE_KEY);
+  });
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const localStorageToken = localStorage.getItem(TOKEN_STORAGE_KEY);
-    if (localStorageToken) {
-      setToken(localStorageToken);
-    }
-  }, []);
+    console.log(token);
 
-  useEffect(() => {
     if (token) {
       localStorage.setItem(TOKEN_STORAGE_KEY, token);
 
       const decoded = jwtDecode<JwtPayload>(token);
-      setUser({ name: decoded.name });
+      setUser({ name: decoded.name, user: decoded.user });
     } else {
       localStorage.removeItem(TOKEN_STORAGE_KEY);
       setUser(null);
