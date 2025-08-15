@@ -5,6 +5,7 @@ import userRoutes from "./routes/users-routes";
 import authRoutes from "./routes/auth-routes";
 import productsRoutes from "./routes/products-routes";
 import ordersRoutes from "./routes/orders-routes";
+import favoritesRoutes from "./routes/favorites-routes";
 import morgan from "morgan";
 import authenticateJwt from "./middleware/authenticateJwt";
 import cors, { type CorsOptions } from "cors";
@@ -50,7 +51,7 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("combined"));
 }
 
-app.use("/api/users", authenticateJwt, authorizeRole("admin"), userRoutes);
+app.use("/api/users", authenticateJwt, userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/products", authenticateJwt, productsRoutes);
 app.use("/api/orders", authenticateJwt, ordersRoutes);
