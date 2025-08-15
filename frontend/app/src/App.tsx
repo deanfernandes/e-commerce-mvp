@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import useAuthContext from "./hooks/useAuthContext";
 import Products from "./pages/Products";
+import ProductDetails from "./pages/ProductDetails";
 
 function App() {
   const { user, token } = useAuthContext();
@@ -27,7 +28,16 @@ function App() {
             path="/login"
             element={!user ? <Login /> : <Navigate to="/" replace />}
           />
-          <Route path="/products" element={<Products />} />
+          <Route
+            path="/products"
+            element={user ? <Products /> : <Navigate to="/login" replace />}
+          />
+          <Route
+            path="/products/:id"
+            element={
+              user ? <ProductDetails /> : <Navigate to="/login" replace />
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

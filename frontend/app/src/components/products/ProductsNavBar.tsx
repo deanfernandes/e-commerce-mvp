@@ -1,6 +1,6 @@
 import { NavLink } from "react-router";
 
-function ProductsNavBar() {
+const ProductsNavBar = () => {
   return (
     <nav className="bg-primary-dark text-gray-200 flex space-x-6 py-2">
       <NavLink
@@ -25,6 +25,6 @@ function ProductsNavBar() {
       </NavLink>
     </nav>
   );
-}
+};
 
 export default ProductsNavBar;
