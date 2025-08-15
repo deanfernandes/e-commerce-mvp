@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router";
 
 type FormData = {
   name: string;
@@ -16,6 +17,7 @@ const SignUp = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -33,6 +35,10 @@ const SignUp = () => {
       if (response.status === 201) {
         setSuccess(true);
         setError(false);
+
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
       } else {
         setError(true);
         setSuccess(false);
