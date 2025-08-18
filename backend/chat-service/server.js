@@ -6,7 +6,7 @@ const { MongoClient } = require("mongodb");
 
 const DB_NAME = "chatApp";
 const COLLECTION_NAME = "messages";
-const client = new MongoClient("mongodb://127.0.0.1:27017");
+const client = new MongoClient("mongodb://mongo:27017");
 
 let db;
 let messages;
