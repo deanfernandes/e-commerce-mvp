@@ -35,9 +35,13 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build image
+        env:
+          GITHUB_USERNAME: ${{ github.repository_owner }}
         run: |
           docker compose build app
 
       - name: Push image
+        env:
+          GITHUB_USERNAME: ${{ github.repository_owner }}
         run: |
           docker compose push app
