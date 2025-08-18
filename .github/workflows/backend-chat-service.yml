@@ -1,0 +1,44 @@
+name: backend-chat-service-ci
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/chat-service/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "backend/chat-service/**"
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1" # every Monday at 06:00 UTC
+
+jobs:
+  deploy:
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+
+    defaults:
+      run:
+        working-directory: backend/chat-service
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build image
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/chat-service-app:latest .
+
+      - name: Push image
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/chat-service-app:latest
