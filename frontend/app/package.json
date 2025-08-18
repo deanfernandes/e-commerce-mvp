@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@deanfernandes/react-chat-ws-client": "^1.0.1",
+    "@deanfernandes/react-chat-ws-client": "^1.0.2",
     "@tailwindcss/vite": "^4.1.11",
     "axios": "^1.11.0",
     "font-awesome": "^4.7.0",
