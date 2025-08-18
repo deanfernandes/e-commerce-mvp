@@ -2,6 +2,25 @@ require("dotenv").config();
 const { WebSocketServer } = require("ws");
 const { URL } = require("node:url");
 const jwt = require("jsonwebtoken");
+const { MongoClient } = require("mongodb");
+
+const DB_NAME = "chatApp";
+const COLLECTION_NAME = "messages";
+const client = new MongoClient("mongodb://127.0.0.1:27017");
+
+let db;
+let messages;
+
+(async () => {
+  try {
+    await client.connect();
+    db = client.db(DB_NAME);
+    messages = db.collection(COLLECTION_NAME);
+    console.log("Connected to MongoDB");
+  } catch (err) {
+    console.error("MongoDB connection error:", err);
+  }
+})();
 
 const wss = new WebSocketServer({ port: process.env.PORT });
 const clients = new Set();
@@ -22,6 +41,12 @@ wss.on("connection", (ws, req) => {
     return;
   }
 
+  if (!messages) {
+    console.log("Database not ready");
+    ws.close(1011, "Database not ready");
+    return;
+  }
+
   let decoded;
   try {
     decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
@@ -37,6 +62,7 @@ wss.on("connection", (ws, req) => {
 
   broadcastSystem(`${ws.user.name} joined the chat`, ws);
   sendChatList(ws);
+  sendChatHistory(ws);
 
   ws.on("close", () => {
     clients.delete(ws);
@@ -54,14 +80,37 @@ wss.on("connection", (ws, req) => {
     }
 
     if (data.type === "chat" && data.message) {
-      broadcastChat(ws.user.name, data.message, ws);
+      const createdAt = new Date();
+      const shortDateTime =
+        createdAt.getFullYear() +
+        "-" +
+        String(createdAt.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(createdAt.getDate()).padStart(2, "0") +
+        " " +
+        String(createdAt.getHours()).padStart(2, "0") +
+        ":" +
+        String(createdAt.getMinutes()).padStart(2, "0");
+
+      broadcastChat(ws.user.name, data.message, ws, shortDateTime);
       console.log(`Message from ${ws.user.name}: ${data.message}`);
+
+      try {
+        await messages.insertOne({
+          userId: ws.user.id,
+          userName: ws.user.name,
+          message: data.message,
+          createdAt: shortDateTime,
+        });
+      } catch (err) {
+        console.error("Error saving message:", err);
+      }
     }
   });
 });
 
-function broadcastChat(user, message, sender) {
-  const payload = JSON.stringify({ type: "chat", user, message });
+function broadcastChat(user, message, sender, createdAt) {
+  const payload = JSON.stringify({ type: "chat", user, message, createdAt });
   for (const client of clients) {
     if (client.readyState === client.OPEN && client !== sender) {
       client.send(payload);
@@ -81,6 +130,24 @@ function broadcastSystem(message, sender) {
 function sendChatList(ws) {
   const currentUsers = Array.from(clients).map((c) => c.user.name);
   ws.send(JSON.stringify({ type: "users", users: currentUsers }));
+}
+
+async function sendChatHistory(ws) {
+  try {
+    const lastMessages = await messages
+      .find({})
+      .sort({ createdAt: 1 })
+      .limit(25)
+      .toArray();
+
+    ws.send(
+      JSON.stringify({ type: "chat_history", chatHistory: lastMessages })
+    );
+
+    console.log("Sent chat history");
+  } catch (err) {
+    console.error("Error fetching history:", err);
+  }
 }
 
 setInterval(() => {
