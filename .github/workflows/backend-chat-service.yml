@@ -36,8 +36,8 @@ jobs:
 
       - name: Build image
         run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/chat-service-app:latest .
+          docker compose build app
 
       - name: Push image
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/chat-service-app:latest
+          docker compose push app
