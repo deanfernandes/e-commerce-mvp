@@ -10,6 +10,12 @@ wss.on("connection", (ws, req) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   const token = url.searchParams.get("token");
 
+  if (token === "test") {
+    ws.close(4001, "Test connection successful");
+    console.log("Test connection successful");
+    return;
+  }
+
   if (!token) {
     ws.close(4000, "Token query parameter required");
     console.log("Connection rejected: no token provided");
