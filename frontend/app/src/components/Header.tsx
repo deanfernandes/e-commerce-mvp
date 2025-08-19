@@ -5,10 +5,25 @@ import ThemeToggleButton from "./ThemeToggleButton";
 import HeaderLink from "./HeaderLink";
 import useAuthContext from "../hooks/useAuthContext";
 import { CartButton } from "./cart/CartButton";
+import axios from "axios";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
-  const { user, logout } = useAuthContext();
+  const { user, logout, token } = useAuthContext();
+
+  const handleLogout = async () => {
+    await axios.post(
+      "api/auth/logout",
+      {},
+      {
+        timeout: 5000,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    logout();
+  };
 
   return (
     <header className="bg-blue-300 p-5 flex justify-between relative">
@@ -32,7 +47,7 @@ const Header = () => {
               <HeaderLink text="Login" to="/login" />
             </>
           ) : (
-            <HeaderLink text="Logout" to="/" onClick={() => logout()} />
+            <HeaderLink text="Logout" to="/" onClick={handleLogout} />
           )}
         </nav>
 

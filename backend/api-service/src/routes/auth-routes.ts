@@ -1,5 +1,10 @@
 import express from "express";
-import { confirm, login, register } from "../controllers/auth-controller";
+import {
+  confirm,
+  login,
+  logout,
+  register,
+} from "../controllers/auth-controller";
 
 const router = express.Router();
 
@@ -129,5 +134,48 @@ router.post("/login", login);
  *         description: Internal server error
  */
 router.post("/confirm", confirm);
+
+/**
+ * @swagger
+ * /logout:
+ *   post:
+ *     summary: Logs out a user by blacklisting their JWT token
+ *     tags:
+ *       - auth
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logged out successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Logged out successfully
+ *       400:
+ *         description: Missing or invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Missing token
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+router.post("/logout", logout);
 
 export default router;

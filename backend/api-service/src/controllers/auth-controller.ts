@@ -10,6 +10,7 @@ import type User from "../models/user";
 import type { Request, Response } from "express";
 import type { StringValue } from "ms";
 import { producer } from "../services/kafka-producer-service";
+import client from "../services/redis-service";
 
 type JwtPayload = {
   email: string;
@@ -122,5 +123,38 @@ export const confirm = async (req: Request, res: Response) => {
     }
 
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader?.split(" ")[1];
+
+  if (!token) {
+    logger.info("Failed to log out, token missing");
+    return res.status(400).json({ message: "Missing token" });
+  }
+
+  try {
+    const decoded = jwt.decode(token) as { exp?: number };
+
+    if (!decoded || !decoded.exp) {
+      logger.info("Failed to log out, token invalid");
+      return res.status(400).json({ message: "Invalid token" });
+    }
+
+    const ttl = decoded.exp - Math.floor(Date.now() / 1000);
+    if (ttl <= 0) {
+      logger.info("Failed to log out, token already expired");
+      return res.status(400).json({ message: "Token already expired" });
+    }
+
+    await client.setEx(`blacklist:${token}`, ttl, "true");
+
+    logger.info("Logged out and blacklisted token successfully");
+    return res.status(200).json({ message: "Logged out successfully" });
+  } catch (err) {
+    console.error("Logout error:", err);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
