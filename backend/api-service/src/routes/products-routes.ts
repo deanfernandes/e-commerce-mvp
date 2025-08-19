@@ -120,7 +120,7 @@ router.post("/", authorizeRole("admin"), productsController.createProduct);
 router.get(
   "/",
   authorizeRole("user", "admin"),
-  cache(REDIS_KEYS.PRODUCTS),
+  cache(REDIS_KEYS.PRODUCTS, true),
   productsController.getProducts
 );
 

@@ -4,6 +4,8 @@ import {
   getUserFavorites,
   postFavorites,
 } from "../controllers/favorites-controller";
+import cache from "../middleware/cache";
+import { REDIS_KEYS } from "../constants/redisKeys";
 
 const router = Router({ mergeParams: true });
 
@@ -77,7 +79,7 @@ router.post("/", postFavorites);
  *       500:
  *         description: Internal server error
  */
-router.get("/", getUserFavorites);
+router.get("/", cache(REDIS_KEYS.FAVORITES, false, true), getUserFavorites);
 
 /**
  * @swagger

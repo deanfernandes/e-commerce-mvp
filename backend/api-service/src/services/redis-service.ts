@@ -2,7 +2,7 @@ import { createClient } from "redis";
 import logger from "./logger-service";
 
 const client = createClient({
-  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+  url: `redis://redis-db`,
 });
 
 client.on("error", (err) => {

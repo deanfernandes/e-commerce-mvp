@@ -2,11 +2,22 @@ import { NextFunction, Request, Response } from "express";
 import client from "../services/redis-service";
 import logger from "../services/logger-service";
 
-export default function cache(key: string) {
+export default function cache(
+  key: string,
+  query: boolean = false,
+  params: boolean = false
+) {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const queryKey = JSON.stringify(req.query);
-      const cacheKey = `${key}:${queryKey}`;
+      let cacheKey = key;
+
+      if (query) {
+        cacheKey += `:query=${JSON.stringify(req.query)}`;
+      }
+
+      if (params) {
+        cacheKey += `:params=${JSON.stringify(req.params)}`;
+      }
 
       logger.info(`Cache middleware started for key: ${cacheKey}`);
       logger.info(`Redis client ready state: ${client.isReady}`);

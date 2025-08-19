@@ -59,8 +59,8 @@ export const getProducts = async (req: Request, res: Response) => {
       order
     );
 
-    const queryKey = JSON.stringify(req.query);
-    const cacheKey = `${REDIS_KEYS.PRODUCTS}:${queryKey}`;
+    let cacheKey: string = REDIS_KEYS.PRODUCTS;
+    cacheKey += `:query=${JSON.stringify(req.query)}`;
     client.setEx(cacheKey, 300, JSON.stringify(products));
     logger.info(`Cached products: ${cacheKey}`);
 

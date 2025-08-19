@@ -5,6 +5,8 @@ import {
   selectFavoritesByUserId,
 } from "../services/database-service";
 import logger from "../services/logger-service";
+import { REDIS_KEYS } from "../constants/redisKeys";
+import client from "../services/redis-service";
 
 export const postFavorites = async (req: Request, res: Response) => {
   try {
@@ -27,6 +29,11 @@ export const getUserFavorites = async (req: Request, res: Response) => {
     const userId = Number(req.params.userId);
 
     const favoriteProducts = await selectFavoritesByUserId(userId);
+
+    let cacheKey: string = REDIS_KEYS.FAVORITES;
+    cacheKey += `:params=${JSON.stringify(req.params)}`;
+    client.setEx(cacheKey, 300, JSON.stringify(favoriteProducts));
+    logger.info(`Cached favorites: ${cacheKey}`);
 
     return res.json(favoriteProducts);
   } catch (err) {
