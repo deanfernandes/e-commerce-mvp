@@ -5,18 +5,23 @@ import logger from "../services/logger-service";
 export default function cache(key: string) {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      logger.info(`Cache middleware started for key: ${key}`);
+      const queryKey = JSON.stringify(req.query);
+      const cacheKey = `${key}:${queryKey}`;
+
+      logger.info(`Cache middleware started for key: ${cacheKey}`);
       logger.info(`Redis client ready state: ${client.isReady}`);
 
-      logger.info(`Attempting to get key: ${key}`);
-      const value = await client.get(key);
+      logger.info(`Attempting to get key: ${cacheKey}`);
+      const value = await client.get(cacheKey);
       logger.info(`Got value from Redis: ${value ? "found" : "not found"}`);
 
       if (value) {
-        logger.info(`Fetched ${key} from cache`);
+        logger.info(`Fetched ${cacheKey} from cache`);
         res.json(JSON.parse(value));
       } else {
-        logger.info(`Cache miss for ${key}, proceeding to next middleware`);
+        logger.info(
+          `Cache miss for ${cacheKey}, proceeding to next middleware`
+        );
         next();
       }
     } catch (err) {
