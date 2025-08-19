@@ -1,6 +1,8 @@
 import express from "express";
 import * as productsController from "../controllers/products-controller";
 import authorizeRole from "../middleware/authorizeRole";
+import cache from "../middleware/cache";
+import { REDIS_KEYS } from "../constants/redisKeys";
 
 const router = express.Router();
 
@@ -115,7 +117,12 @@ router.post("/", authorizeRole("admin"), productsController.createProduct);
  *       500:
  *         description: Internal server error
  */
-router.get("/", authorizeRole("user", "admin"), productsController.getProducts);
+router.get(
+  "/",
+  authorizeRole("user", "admin"),
+  cache(REDIS_KEYS.PRODUCTS),
+  productsController.getProducts
+);
 
 /**
  * @swagger
