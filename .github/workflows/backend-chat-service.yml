@@ -35,13 +35,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build image
-        env:
-          GITHUB_USERNAME: ${{ github.repository_owner }}
         run: |
-          docker compose build app
+          docker build -t ghcr.io/${{ github.repository_owner }}/chat-service-app:latest .
 
       - name: Push image
-        env:
-          GITHUB_USERNAME: ${{ github.repository_owner }}
         run: |
-          docker compose push app
+          docker push ghcr.io/${{ github.repository_owner }}/chat-service-app:latest
