@@ -3,6 +3,8 @@ import Product from "../models/product";
 import * as databaseService from "../services/database-service";
 import logger from "../services/logger-service";
 import { Order, SortBy } from "../types/Product";
+import client from "../services/redis-service";
+import { REDIS_KEYS } from "../constants/redisKeys";
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
@@ -56,6 +58,10 @@ export const getProducts = async (req: Request, res: Response) => {
       sortBy,
       order
     );
+
+    client.setEx(REDIS_KEYS.PRODUCTS, 300, JSON.stringify(products));
+    logger.info("Cached products");
+
     return res.json(products);
   } catch (err) {
     logger.error("Failed to get products", err);
