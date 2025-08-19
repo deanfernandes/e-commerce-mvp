@@ -8,6 +8,10 @@ jest.mock("../services/database-service", () => ({
 
 jest.mock("../services/logger-service");
 
+jest.mock("../services/redis-service", () => ({
+  setEx: jest.fn(),
+}));
+
 import {
   createProduct,
   getProducts,
