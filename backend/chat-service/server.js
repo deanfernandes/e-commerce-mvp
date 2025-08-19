@@ -6,7 +6,7 @@ const { MongoClient } = require("mongodb");
 
 const DB_NAME = "chatApp";
 const COLLECTION_NAME = "messages";
-const client = new MongoClient("mongodb://mongo:27017");
+const client = new MongoClient(process.env.DB_URL);
 
 let db;
 let messages;
@@ -49,10 +49,11 @@ wss.on("connection", (ws, req) => {
 
   let decoded;
   try {
+    console.log(`secret key: ${process.env.JWT_SECRET_KEY}`);
     decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
   } catch (err) {
     ws.close(4000, "Invalid token");
-    console.log("Connection rejected: invalid token provided");
+    console.log("Connection rejected: invalid token provided", err.message);
     return;
   }
 
