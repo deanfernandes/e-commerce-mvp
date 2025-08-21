@@ -6,4 +6,11 @@
 
 ![frontend ci](https://github.com/deanfernandes/e-commerce-mvp/actions/workflows/frontend.yml/badge.svg)
 
+Full stack web app, microservices backend
 WIP
+
+## Live AWS: 
+https://16.171.183.61/
+
+## Demo:
+https://youtu.be/AoeY3K6FTjY
