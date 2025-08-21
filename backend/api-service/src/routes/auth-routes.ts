@@ -133,7 +133,7 @@ router.post("/login", login);
  *       500:
  *         description: Internal server error
  */
-router.post("/confirm", confirm);
+router.get("/confirm", confirm);
 
 /**
  * @swagger
