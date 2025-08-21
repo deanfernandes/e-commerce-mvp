@@ -5,13 +5,11 @@ import userRoutes from "./routes/users-routes";
 import authRoutes from "./routes/auth-routes";
 import productsRoutes from "./routes/products-routes";
 import ordersRoutes from "./routes/orders-routes";
-import favoritesRoutes from "./routes/favorites-routes";
 import morgan from "morgan";
 import authenticateJwt from "./middleware/authenticateJwt";
 import cors, { type CorsOptions } from "cors";
 import dotenv from "dotenv";
 import rateLimit from "express-rate-limit";
-import authorizeRole from "./middleware/authorizeRole";
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./swagger/swagger");
 
@@ -19,12 +17,11 @@ dotenv.config();
 
 const app = express();
 
-const allowNoOrigin = process.env.NODE_ENV === "development";
 var whitelist = [process.env.REVERSE_PROXY_ORIGIN];
 var corsOptions: CorsOptions = {
   origin: function (origin, callback) {
-    if (!origin && allowNoOrigin) {
-      callback(null, true); // Allow Postman
+    if (!origin) {
+      callback(null, true); // Allow Postman, email confirm link
     } else if (origin && whitelist.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
