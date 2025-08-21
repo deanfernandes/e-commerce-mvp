@@ -9,7 +9,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendConfirmEmail(email, token) {
-  const confirmUrl = `https://${process.env.API_HOST}/confirm?token=${token}`;
+  const confirmUrl = `https://${process.env.API_HOST}/api/auth/confirm?token=${token}`;
 
   const mailOptions = {
     from: process.env.SMTP_EMAIL,
