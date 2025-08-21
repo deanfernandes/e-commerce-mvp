@@ -20,7 +20,7 @@ export default function CreateProduct() {
   const { token } = useAuthContext();
 
   useEffect(() => {
-    const interval = setInterval(async () => {
+    const healthCheck = async () => {
       try {
         const res = await fetch("/ai/health/");
         const data = await res.json();
@@ -28,7 +28,11 @@ export default function CreateProduct() {
       } catch {
         setAiEnabled(false);
       }
-    }, 5000);
+    };
+
+    healthCheck();
+
+    const interval = setInterval(healthCheck, 5000);
 
     return () => clearInterval(interval);
   }, []);
@@ -72,7 +76,10 @@ export default function CreateProduct() {
     try {
       const res = await fetch("/api/products", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           ...formData,
           price: parseFloat(formData.price),
@@ -116,7 +123,7 @@ export default function CreateProduct() {
           </label>
           <textarea
             id="description"
-            className="border border-gray-300 rounded py-1 px-2"
+            className="border border-gray-300 rounded py-1 px-2 resize-none  h-32 w-full"
             value={formData.description}
             onChange={handleChange}
             required
@@ -124,10 +131,14 @@ export default function CreateProduct() {
           />
           <button
             type="button"
-            className={`absolute right-1 top-6 px-2 py-1 text-sm rounded bg-blue-300 hover:bg-blue-500 text-white disabled:bg-gray-300`}
+            className={`absolute right-1 px-2 py-1 text-sm bg-blue-300 font-medium rounded text-white hover:bg-blue-500 transition disabled:bg-gray-300 cursor-pointer`}
             disabled={!aiEnabled || success}
             onClick={handleAiClick}
-            title="Use AI to auto generate description for product from title"
+            title={
+              aiEnabled
+                ? "Use AI to auto generate description for product from title"
+                : "AI service is down"
+            }
           >
             AI
           </button>
@@ -148,17 +159,12 @@ export default function CreateProduct() {
             disabled={success}
           />
         </div>
-
         <button
           type="submit"
-          className={`bg-blue-400 text-white rounded py-2 hover:bg-blue-500 transition ${
-            success ? "cursor-default pointer-events-none bg-green-500" : ""
-          }`}
-          disabled={success}
+          className="bg-blue-300 font-medium rounded text-white hover:bg-blue-500 transition py-2 cursor-pointer mx-5 md:mx-0"
         >
           Create Product
         </button>
-
         {loading && <p className="text-center text-sm">Loading...</p>}
         {success && (
           <p className="text-center text-sm text-green-500">
