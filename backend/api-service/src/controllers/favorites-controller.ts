@@ -17,6 +17,11 @@ export const postFavorites = async (req: Request, res: Response) => {
 
     await insertFavorite(userId, productId);
 
+    let cacheKey: string = REDIS_KEYS.FAVORITES;
+    cacheKey += `:params=${JSON.stringify(req.params)}`;
+    await client.del(cacheKey);
+    logger.info(`Deleted cache ${cacheKey}`);
+
     return res.status(201).send();
   } catch (err) {
     logger.error("Failed to add favorite: ", err);
