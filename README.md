@@ -10,7 +10,7 @@ Full stack web app, microservices backend
 WIP
 
 ## Live AWS: 
-https://16.171.183.61/
+<s>https://16.171.183.61/</s>
 
 ## Demo:
 https://youtu.be/AoeY3K6FTjY
